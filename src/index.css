@@ -41,3 +41,7 @@ input {
   cursor: pointer;
   max-width: 250px;
 }
+
+bttton:disabled {
+  color: buttonface !important;
+}

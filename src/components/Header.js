@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
+import { enhanceErrorWithDocument } from 'apollo-client-preset';
 
 class Header extends Component {
   render() {
@@ -25,17 +26,16 @@ class Header extends Component {
             <Link to="/search" className="ml1 no-underline black">
               search
             </Link>
+            <div className="ml1">|</div>
             <Link to="/top" className="ml1 no-underline black">
               top
             </Link>
-            <div className="ml1">|</div>
           </div>
         </div>
-        <div className="ml1">|</div>
 
         <div className="flex flex-fixed">
           {userId ? (
-            <div
+            <button
               className="ml1 pointer black"
               onClick={() => {
                 localStorage.removeItem('GC_USER_ID');
@@ -44,7 +44,7 @@ class Header extends Component {
               }}
             >
               logout
-            </div>
+            </button>
           ) : (
             <Link to="/login" className="ml1 no-underline black">
               login
@@ -56,4 +56,4 @@ class Header extends Component {
   }
 }
 
-export default Header;
+export default withRouter(Header);

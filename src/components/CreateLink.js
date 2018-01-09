@@ -15,6 +15,7 @@ class CreateLink extends Component {
       return;
     }
     const { description, url } = this.state;
+    // have not implemented update function or optimisticResponse
     await this.props.createLinkMutation({
       variables: {
         description,
@@ -22,7 +23,8 @@ class CreateLink extends Component {
         postedById,
       },
     });
-    this.props.history.push('/');
+
+    this.props.history.push('/new/1');
   };
 
   render() {

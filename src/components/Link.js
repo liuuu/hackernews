@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
+import { withRouter } from 'react-router-dom';
 import { ALL_LINKS_QUERY } from './LinksList';
 
 function timeDifference(current, previous) {
@@ -29,6 +30,7 @@ function timeDifference(current, previous) {
   }
   return `${Math.round(elapsed / milliSecondsPerYear)} years ago`;
 }
+const LINKS_PER_PAGE = 10;
 
 export function timeDifferenceForDate(date) {
   const now = new Date().getTime();
@@ -38,7 +40,12 @@ export function timeDifferenceForDate(date) {
 
 class Link extends Component {
   updateStoreAfterVote = (store, createVote, linkId) => {
-    const data = store.readQuery({ query: ALL_LINKS_QUERY });
+    const isNewPage = this.props.location.pathname.includes('new');
+    const page = parseInt(this.props.match.params.page, 10);
+    const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0;
+    const first = isNewPage ? LINKS_PER_PAGE : 10;
+    const orderBy = isNewPage ? 'createdAt_DESC' : null;
+    const data = store.readQuery({ query: ALL_LINKS_QUERY, variables: { first, skip, orderBy } });
 
     const votedLink = data.allLinks.find(link => link.id === linkId);
     votedLink.votes = createVote.link.votes;
@@ -69,12 +76,21 @@ class Link extends Component {
 
   render() {
     const userId = localStorage.getItem('GC_USER_ID');
+    const voterIds = this.props.link.votes.map(vote => vote.user.id);
+    let alreadyVoted = false;
+    if (voterIds.includes(userId)) {
+      alreadyVoted = true;
+    }
     return (
       <div className="flex mt2 items-start">
         <div className="flex items-center">
           <span className="gray">{this.props.index + 1}.</span>
           {userId && (
-            <button className="ml1 gray f11" onClick={() => this._voteForLink()}>
+            <button
+              className="ml1 gray f11"
+              onClick={() => this._voteForLink()}
+              disabled={alreadyVoted}
+            >
               ▲
             </button>
           )}
@@ -121,4 +137,4 @@ const CREATE_VOTE_MUTATION = gql`
 
 export default graphql(CREATE_VOTE_MUTATION, {
   name: 'createVoteMutation',
-})(Link);
+})(withRouter(Link));
