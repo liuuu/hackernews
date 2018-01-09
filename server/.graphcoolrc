@@ -1,0 +1,3 @@
+targets:
+  hacker-target: shared-us-west-2/cjc5ppqu20phx0181bek2mbl1
+  default: hacker-target
